@@ -1,0 +1,107 @@
+[2024-10-02 11:52:23] OpenAI API response is not in JSON format on attempt 1. Response content: Sure! Here is the JSON format with 4 SEO-optimized categories for the blog post titled "SEO Optimization Techniques":
+
+```json
+{
+  "categories": [
+    "On-Page SEO Strategies",
+    "Off-Page SEO Techniques",
+    "Technical SEO Best Practices",
+    "Content Marketing for SEO"
+  ]
+}
+```
+[2024-10-02 11:52:26] OpenAI API call successful on attempt 2. Response: {
+  "categories": ["On-Page SEO Strategies", "Off-Page SEO Techniques", "Technical SEO Best Practices", "Content Optimization Tips"]
+}
+[2024-10-02 11:52:27] OpenAI API call successful on attempt 1. Response: {
+  "tags": ["SEO Optimization", "SEO Techniques", "Improve Website Ranking", "Search Engine Optimization Tips", "Boost Organic Traffic"]
+}
+[2024-10-02 11:56:14] OpenAI API call successful on attempt 1. Response: {
+  "categories": [
+    "On-Page SEO Strategies",
+    "Off-Page SEO Techniques",
+    "Technical SEO Best Practices",
+    "Content Optimization Tips",
+    "SEO Tools and Resources"
+  ]
+}
+[2024-10-02 11:56:15] OpenAI API call successful on attempt 1. Response: {
+  "tags": ["SEO Techniques", "Search Engine Optimization", "SEO Best Practices", "Optimize Website SEO", "SEO Strategies"]
+}
+[2024-10-02 11:56:15] 'Uncategorized' category is not assigned to post ID 5.
+[2024-10-02 12:02:29] Cleared all categories from post ID 5.
+[2024-10-02 12:02:29] Cleared all tags from post ID 5.
+[2024-10-02 12:02:30] OpenAI API response is not in JSON format on attempt 1. Response content: ```json
+{
+  "categories": ["On-Page SEO Strategies", "Off-Page SEO Techniques", "Technical SEO Best Practices"]
+}
+```
+[2024-10-02 12:02:33] OpenAI API call successful on attempt 2. Response: {
+  "categories": ["On-Page SEO Techniques", "Off-Page SEO Strategies", "Technical SEO Best Practices"]
+}
+[2024-10-02 12:02:34] OpenAI API call successful on attempt 1. Response: {
+  "tags": ["SEO Optimization", "SEO Techniques", "Search Engine Optimization", "SEO Tips", "Improve Google Ranking"]
+}
+[2024-10-02 12:02:34] Removed 'Uncategorized' category from post ID 5.
+[2024-10-02 12:08:28] Cleared all categories from post ID 5.
+[2024-10-02 12:08:28] Cleared all tags from post ID 5.
+[2024-10-02 12:08:29] OpenAI API response is not in JSON format on attempt 1. Response content: ```json
+{
+  "categories": ["SEO Best Practices", "Digital Marketing Strategies", "Website Optimization"]
+}
+```
+[2024-10-02 12:08:31] OpenAI API response is not in JSON format on attempt 2. Response content: ```json
+{
+  "categories": ["Digital Marketing", "Online Business", "Website Development"]
+}
+```
+[2024-10-02 12:08:36] OpenAI API response is not in JSON format on attempt 3. Response content: ```json
+{
+  "categories": ["SEO Best Practices", "Digital Marketing Strategies", "Website Optimization"]
+}
+```
+[2024-10-02 12:08:44] Failed to send notification email to herson@gmail.com.
+[2024-10-02 12:08:45] OpenAI API returned status code 429 on attempt 1. Response body: {
+    "error": {
+        "message": "Rate limit reached for gpt-4o in organization org-3BizpWwsH4x8BCPpe6rV2DLu on requests per min (RPM): Limit 3, Used 3, Requested 1. Please try again in 20s. Visit https://platform.openai.com/account/rate-limits to learn more. You can increase your rate limit by adding a payment method to your account at https://platform.openai.com/account/billing.",
+        "type": "requests",
+        "param": null,
+        "code": "rate_limit_exceeded"
+    }
+}
+
+[2024-10-02 12:08:47] OpenAI API returned status code 429 on attempt 2. Response body: {
+    "error": {
+        "message": "Rate limit reached for gpt-4o in organization org-3BizpWwsH4x8BCPpe6rV2DLu on requests per min (RPM): Limit 3, Used 3, Requested 1. Please try again in 20s. Visit https://platform.openai.com/account/rate-limits to learn more. You can increase your rate limit by adding a payment method to your account at https://platform.openai.com/account/billing.",
+        "type": "requests",
+        "param": null,
+        "code": "rate_limit_exceeded"
+    }
+}
+
+[2024-10-02 12:08:52] OpenAI API response is not in JSON format on attempt 3. Response content: ```json
+{
+  "tags": ["SEO Techniques", "Keyword Research", "On-Page Optimization", "Mobile SEO", "Technical SEO"]
+}
+```
+[2024-10-02 12:09:00] Failed to send notification email to herson@gmail.com.
+[2024-10-02 12:09:00] Removed 'Uncategorized' category from post ID 5.
+[2024-10-02 12:14:22] Cleared all categories from post ID 5.
+[2024-10-02 12:14:22] Cleared all tags from post ID 5.
+[2024-10-02 12:14:23] Stripped Markdown code blocks from OpenAI response.
+[2024-10-02 12:14:23] OpenAI API call successful on attempt 1. Response: {
+  "categories": ["Digital Marketing", "Website Optimization", "Content Strategy"]
+}
+[2024-10-02 12:14:24] Stripped Markdown code blocks from OpenAI response.
+[2024-10-02 12:14:24] OpenAI API call successful on attempt 1. Response: {
+  "tags": ["SEO Techniques", "Keyword Research", "On-Page Optimization", "Mobile Optimization", "Technical SEO"]
+}
+[2024-10-02 12:14:24] Removed 'Uncategorized' category from post ID 5.
+[2024-10-02 12:32:37] Post ID 5 skipped: sufficient categories and tags already exist.
+[2024-10-05 23:14:55] Stripped Markdown code blocks from OpenAI response.
+[2024-10-05 23:14:56] Stripped Markdown code blocks from OpenAI response.
+[2024-10-05 23:14:56] Removed 'Uncategorized' category from post ID 5.
+[2024-10-05 23:15:20] Stripped Markdown code blocks from OpenAI response.
+[2024-10-05 23:15:20] 'Uncategorized' category is not assigned to post ID 5.
+[2024-10-06 11:36:23] Stripped Markdown code blocks from OpenAI response.
+[2024-10-06 11:36:23] 'Uncategorized' category is not assigned to post ID 5.

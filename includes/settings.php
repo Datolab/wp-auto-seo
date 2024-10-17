@@ -41,7 +41,7 @@ class Datolab_Auto_SEO_Settings {
     }
 
     public function register_settings() {
-        // Register the setting with the correct option group name and unique option name
+        // Register the settings for OpenAI API key
         register_setting(
             'datolab_auto_seo_settings_group',           // Option group
             'datolab_auto_seo_openai_api_key',          // Option name (unique)
@@ -52,15 +52,37 @@ class Datolab_Auto_SEO_Settings {
             )
         );
 
+        // Register the settings for Cohere API key
+        register_setting(
+            'datolab_auto_seo_settings_group',           // Option group
+            'datolab_auto_seo_cohere_api_key',          // Option name (unique)
+            array(
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default'           => '',
+            )
+        );
+
+        // Register the settings for Anthropic API key
+        register_setting(
+            'datolab_auto_seo_settings_group',           // Option group
+            'datolab_auto_seo_anthropic_api_key',       // Option name (unique)
+            array(
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default'           => '',
+            )
+        );
+
         // Add a new section in the settings page
         add_settings_section(
             'datolab_auto_seo_main_section',            // Section ID
-            'OpenAI Configuration',                     // Section title
+            'API Configuration',                         // Section title
             array( $this, 'main_section_callback' ),    // Callback function
             'datolab-auto-seo-settings'                 // Page slug
         );
 
-        // Add a new field in the section
+        // Add fields for OpenAI API key
         add_settings_field(
             'openai_api_key',                             // Field ID
             'OpenAI API Key',                             // Field title
@@ -68,30 +90,59 @@ class Datolab_Auto_SEO_Settings {
             'datolab-auto-seo-settings',                  // Page slug
             'datolab_auto_seo_main_section'               // Section ID
         );
+
+        // Add fields for Cohere API key
+        add_settings_field(
+            'cohere_api_key',                             // Field ID
+            'Cohere API Key',                             // Field title
+            array( $this, 'cohere_api_key_callback' ),    // Callback function
+            'datolab-auto-seo-settings',                  // Page slug
+            'datolab_auto_seo_main_section'               // Section ID
+        );
+
+        // Add fields for Anthropic API key
+        add_settings_field(
+            'anthropic_api_key',                          // Field ID
+            'Anthropic API Key',                          // Field title
+            array( $this, 'anthropic_api_key_callback' ), // Callback function
+            'datolab-auto-seo-settings',                  // Page slug
+            'datolab_auto_seo_main_section'               // Section ID
+        );
     }
 
     public function main_section_callback() {
-        echo '<p>' . esc_html__( 'Enter your OpenAI API key to enable automatic SEO tag and category generation.', 'datolab-auto-seo' ) . '</p>';
+        echo '<p>' . esc_html__( 'Enter your API keys to enable automatic SEO tag and category generation.', 'datolab-auto-seo' ) . '</p>';
     }
 
     public function openai_api_key_callback() {
-        // Retrieve the existing value from the database
         $api_key = get_option( 'datolab_auto_seo_openai_api_key', '' );
-
-        // Output the input field with type password to mask the API key
         echo '<input type="password" id="openai_api_key" name="datolab_auto_seo_openai_api_key" value="' . esc_attr( $api_key ) . '" size="50" />';
-        
-        // Add a button to toggle visibility of the API key
-        echo '<button type="button" id="toggle_api_key" style="margin-left:10px;">' . esc_html__( 'Show', 'datolab-auto-seo' ) . '</button>';
-        echo '<button type="button" id="reset_api_key" style="margin-left:10px;">' . esc_html__( 'Reset API Key', 'datolab-auto-seo' ) . '</button>';
-        echo '<p class="description">' . esc_html__( 'Your OpenAI API key is stored securely. You can reveal it by clicking the "Show" button or reset it if needed.', 'datolab-auto-seo' ) . '</p>';
+        $this->add_toggle_reset_buttons('openai_api_key');
+    }
+
+    public function cohere_api_key_callback() {
+        $api_key = get_option( 'datolab_auto_seo_cohere_api_key', '' );
+        echo '<input type="password" id="cohere_api_key" name="datolab_auto_seo_cohere_api_key" value="' . esc_attr( $api_key ) . '" size="50" />';
+        $this->add_toggle_reset_buttons('cohere_api_key');
+    }
+
+    public function anthropic_api_key_callback() {
+        $api_key = get_option( 'datolab_auto_seo_anthropic_api_key', '' );
+        echo '<input type="password" id="anthropic_api_key" name="datolab_auto_seo_anthropic_api_key" value="' . esc_attr( $api_key ) . '" size="50" />';
+        $this->add_toggle_reset_buttons('anthropic_api_key');
+    }
+
+    private function add_toggle_reset_buttons($field_id) {
+        echo '<button type="button" id="toggle_' . $field_id . '" style="margin-left:10px;">' . esc_html__( 'Show', 'datolab-auto-seo' ) . '</button>';
+        echo '<button type="button" id="reset_' . $field_id . '" style="margin-left:10px;">' . esc_html__( 'Reset API Key', 'datolab-auto-seo' ) . '</button>';
+        echo '<p class="description">' . esc_html__( 'Your API key is stored securely. You can reveal it by clicking the "Show" button or reset it if needed.', 'datolab-auto-seo' ) . '</p>';
         ?>
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
-                var toggleButton = document.getElementById('toggle_api_key');
+                var toggleButton = document.getElementById('toggle_<?php echo $field_id; ?>');
                 if (toggleButton) {
                     toggleButton.addEventListener('click', function() {
-                        var apiKeyField = document.getElementById('openai_api_key');
+                        var apiKeyField = document.getElementById('<?php echo $field_id; ?>');
                         if (apiKeyField.type === 'password') {
                             apiKeyField.type = 'text';
                             toggleButton.textContent = '<?php echo esc_js( __( "Hide", "datolab-auto-seo" ) ); ?>';
@@ -102,13 +153,13 @@ class Datolab_Auto_SEO_Settings {
                     });
                 }
 
-                var resetButton = document.getElementById('reset_api_key');
+                var resetButton = document.getElementById('reset_<?php echo $field_id; ?>');
                 if (resetButton) {
                     resetButton.addEventListener('click', function() {
-                        if (confirm('<?php echo esc_js( __( "Are you sure you want to reset your OpenAI API key? This action cannot be undone.", "datolab-auto-seo" ) ); ?>')) {
-                            var apiKeyField = document.getElementById('openai_api_key');
+                        if (confirm('<?php echo esc_js( __( "Are you sure you want to reset your API key? This action cannot be undone.", "datolab-auto-seo" ) ); ?>')) {
+                            var apiKeyField = document.getElementById('<?php echo $field_id; ?>');
                             apiKeyField.value = '';
-                            toggleButton = document.getElementById('toggle_api_key');
+                            toggleButton = document.getElementById('toggle_<?php echo $field_id; ?>');
                             if (toggleButton) {
                                 toggleButton.textContent = '<?php echo esc_js( __( "Show", "datolab-auto-seo" ) ); ?>';
                                 apiKeyField.type = 'password';

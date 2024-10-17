@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-class OpenAI_API_Handler {
+class OpenAI_API_Handler extends AI_API_Handler {
     /**
      * Maximum number of retries for API calls.
      */
@@ -13,11 +13,10 @@ class OpenAI_API_Handler {
      * Calls the OpenAI API with retry mechanism using the chat completions endpoint.
      *
      * @param string $prompt   The prompt to send to OpenAI.
-     * @param string $api_key  The OpenAI API key.
      *
      * @return string|WP_Error The API response text or WP_Error on failure.
      */
-    public function call_openai_api_with_retries( $prompt, $api_key ) {
+    public function call_api( $prompt ) {
         $api_url = 'https://api.openai.com/v1/chat/completions'; // Chat completions endpoint
         $attempt = 0;
 
@@ -40,7 +39,7 @@ class OpenAI_API_Handler {
                 ) ),
                 'headers'     => array(
                     'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . $api_key,
+                    'Authorization' => 'Bearer ' . $this->api_key,
                 ),
                 'timeout'     => 60,
                 'data_format' => 'body',

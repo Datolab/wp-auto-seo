@@ -4,7 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-    require_once 'class-openai-api-handler.php'; // Include the new OpenAI API handler
+    require_once 'class-ai-api-handler.php'; // Include the base AI API handler
+    require_once 'class-openai-api-handler.php'; // Include the OpenAI API handler
+    // TODO: Add cohere and anthropic api handlers
 
     class Datolab_Auto_SEO_CLI_Command extends WP_CLI_Command {
 
@@ -31,7 +33,12 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
         private $openai_api_handler;
 
         public function __construct() {
-            $this->openai_api_handler = new OpenAI_API_Handler(); // Initialize the OpenAI API handler
+            $api_key = $this->get_openai_api_key(); // Retrieve the OpenAI API key securely
+            if ( ! empty( $api_key ) ) {
+                $this->openai_api_handler = new OpenAI_API_Handler( $api_key ); // Initialize the OpenAI API handler
+            } else {
+                WP_CLI::error( 'OpenAI API key is not set. Please set it in the Datolab Auto SEO settings.' );
+            }
         }
 
         /**
@@ -58,18 +65,11 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
                 return;
             }
 
-            // Get OpenAI API Key securely
-            $api_key = $this->get_openai_api_key();
-            if ( empty( $api_key ) ) {
-                WP_CLI::error( 'OpenAI API key is not set. Please set it in the Datolab Auto SEO settings.' );
-                return;
-            }
-
             foreach ( $draft_posts as $post ) {
                 WP_CLI::log( "Processing post ID {$post->ID}: {$post->post_title}" );
 
-                $this->process_categories( $post, $api_key );
-                $this->process_tags( $post, $api_key );
+                $this->process_categories( $post );
+                $this->process_tags( $post );
 
                 // Remove "Uncategorized" from post categories
                 $this->remove_uncategorized( $post->ID );
@@ -80,13 +80,13 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             WP_CLI::success( 'All draft posts have been processed.' );
         }
 
-        private function process_categories( $post, $api_key ) {
+        private function process_categories( $post ) {
             $current_categories_count = count( wp_get_post_categories( $post->ID ) );
             $categories_needed = max( 0, self::MAX_CATEGORIES - $current_categories_count );
 
             if ( $categories_needed > 0 ) {
                 WP_CLI::log( "Generating up to " . self::MAX_CATEGORIES . " categories." );
-                $generated_categories = $this->generate_categories( $post, $categories_needed, $api_key );
+                $generated_categories = $this->generate_categories( $post, $categories_needed );
 
                 foreach ( $generated_categories as $category_name ) {
                     $this->associate_category( $post->ID, $category_name );
@@ -94,6 +94,94 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             } else {
                 WP_CLI::log( "Post ID {$post->ID} already has the maximum number of categories." );
             }
+        }
+
+        private function process_tags( $post ) {
+            $current_tags_count = count( wp_get_post_tags( $post->ID ) );
+            $tags_needed = max( 0, self::MAX_TAGS - $current_tags_count );
+
+            if ( $tags_needed > 0 ) {
+                WP_CLI::log( "Generating up to " . self::MAX_TAGS . " tags." );
+                $generated_tags = $this->generate_tags( $post, $tags_needed );
+
+                foreach ( $generated_tags as $tag_name ) {
+                    $this->associate_tag( $post->ID, $tag_name );
+                }
+            } else {
+                WP_CLI::log( "Post ID {$post->ID} already has the maximum number of tags." );
+            }
+        }
+
+        private function generate_categories( $post, $number ) {
+            // Fetch post content for better context
+            $post_content = $post->post_content;
+            $post_excerpt = $post->post_excerpt;
+
+            $prompt = "Based on the following blog post title and content, generate {$number} SEO-optimized categories. The categories should be broad, descriptive, and relevant to the post's topic. Do not include numbers. Provide the results in the following JSON format:\n\n{\n  \"categories\": [\"Category1\", \"Category2\", \"Category3\"]\n}\n\nTitle: \"{$post->post_title}\"\n\nContent: \"{$post_content}\"\n\nExcerpt: \"{$post_excerpt}\"";
+
+            $response = $this->openai_api_handler->call_api( $prompt );
+
+            if ( is_wp_error( $response ) ) {
+                WP_CLI::warning( "OpenAI API error while generating categories for post ID {$post->ID}: " . $response->get_error_message() );
+                return array();
+            }
+
+            // Strip Markdown code blocks if present
+            $response = $this->strip_markdown_code_blocks( $response );
+
+            // Parse JSON response
+            $parsed = json_decode( $response, true );
+
+            if ( json_last_error() !== JSON_ERROR_NONE ) {
+                WP_CLI::warning( "Failed to parse JSON response while generating categories for post ID {$post->ID}: " . json_last_error_msg() );
+                return array();
+            }
+
+            if ( ! isset( $parsed['categories'] ) || ! is_array( $parsed['categories'] ) ) {
+                WP_CLI::warning( "JSON response does not contain 'categories' array for post ID {$post->ID}." );
+                return array();
+            }
+
+            WP_CLI::log( "Categories parsed successfully for post ID {$post->ID}." );
+
+            // Limit to the required number of categories
+            return array_slice( $parsed['categories'], 0, $number );
+        }
+
+        private function generate_tags( $post, $number ) {
+            // Fetch post content for better context
+            $post_content = $post->post_content;
+            $post_excerpt = $post->post_excerpt;
+
+            $prompt = "Based on the following blog post title and content, generate {$number} SEO-optimized tags. The tags should be specific, relevant, and descriptive keywords that reflect the main topics of the post. Do not include numbers. Provide the results in the following JSON format:\n\n{\n  \"tags\": [\"Tag1\", \"Tag2\", \"Tag3\", \"Tag4\", \"Tag5\"]\n}\n\nTitle: \"{$post->post_title}\"\n\nContent: \"{$post_content}\"\n\nExcerpt: \"{$post_excerpt}\"";
+
+            $response = $this->openai_api_handler->call_api( $prompt );
+
+            if ( is_wp_error( $response ) ) {
+                WP_CLI::warning( "OpenAI API error while generating tags for post ID {$post->ID}: " . $response->get_error_message() );
+                return array();
+            }
+
+            // Strip Markdown code blocks if present
+            $response = $this->strip_markdown_code_blocks( $response );
+
+            // Parse JSON response
+            $parsed = json_decode( $response, true );
+
+            if ( json_last_error() !== JSON_ERROR_NONE ) {
+                WP_CLI::warning( "Failed to parse JSON response while generating tags for post ID {$post->ID}: " . json_last_error_msg() );
+                return array();
+            }
+
+            if ( ! isset( $parsed['tags'] ) || ! is_array( $parsed['tags'] ) ) {
+                WP_CLI::warning( "JSON response does not contain 'tags' array for post ID {$post->ID}." );
+                return array();
+            }
+
+            WP_CLI::log( "Tags parsed successfully for post ID {$post->ID}." );
+
+            // Limit to the required number of tags
+            return array_slice( $parsed['tags'], 0, $number );
         }
 
         private function associate_category( $post_id, $category_name ) {
@@ -114,22 +202,6 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
             // Associate category with post
             wp_set_post_categories( $post_id, array_merge( wp_get_post_categories( $post_id ), array( $term_id ) ) );
-        }
-
-        private function process_tags( $post, $api_key ) {
-            $current_tags_count = count( wp_get_post_tags( $post->ID ) );
-            $tags_needed = max( 0, self::MAX_TAGS - $current_tags_count );
-
-            if ( $tags_needed > 0 ) {
-                WP_CLI::log( "Generating up to " . self::MAX_TAGS . " tags." );
-                $generated_tags = $this->generate_tags( $post, $tags_needed, $api_key );
-
-                foreach ( $generated_tags as $tag_name ) {
-                    $this->associate_tag( $post->ID, $tag_name );
-                }
-            } else {
-                WP_CLI::log( "Post ID {$post->ID} already has the maximum number of tags." );
-            }
         }
 
         private function associate_tag( $post_id, $tag_name ) {
@@ -192,100 +264,6 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             }
 
             return true;
-        }
-
-        /**
-         * Generates categories using OpenAI with retry mechanism and JSON parsing.
-         *
-         * @param WP_Post $post     The post object.
-         * @param int     $number   Number of categories to generate.
-         * @param string  $api_key  The OpenAI API key.
-         *
-         * @return array Array of generated categories or empty array on failure.
-         */
-        private function generate_categories( $post, $number, $api_key ) {
-            // Fetch post content for better context
-            $post_content = $post->post_content;
-            $post_excerpt = $post->post_excerpt;
-
-            $prompt = "Based on the following blog post title and content, generate {$number} SEO-optimized categories. The categories should be broad, descriptive, and relevant to the post's topic. Do not include numbers. Provide the results in the following JSON format:\n\n{\n  \"categories\": [\"Category1\", \"Category2\", \"Category3\"]\n}\n\nTitle: \"{$post->post_title}\"\n\nContent: \"{$post_content}\"\n\nExcerpt: \"{$post_excerpt}\"";
-
-            $response = $this->openai_api_handler->call_openai_api_with_retries( $prompt, $api_key );
-
-            if ( is_wp_error( $response ) ) {
-                WP_CLI::warning( "OpenAI API error while generating categories for post ID {$post->ID}: " . $response->get_error_message() );
-                return array();
-            }
-
-            // Strip Markdown code blocks if present
-            $response = $this->strip_markdown_code_blocks( $response );
-
-            // Parse JSON response
-            $parsed = json_decode( $response, true );
-
-            if ( json_last_error() !== JSON_ERROR_NONE ) {
-                WP_CLI::warning( "Failed to parse JSON response while generating categories for post ID {$post->ID}: " . json_last_error_msg() );
-                $this->log_to_file( "JSON parse error for post ID {$post->ID}: " . json_last_error_msg() . ". Response: {$response}" );
-                return array();
-            }
-
-            if ( ! isset( $parsed['categories'] ) || ! is_array( $parsed['categories'] ) ) {
-                WP_CLI::warning( "JSON response does not contain 'categories' array for post ID {$post->ID}." );
-                $this->log_to_file( "Invalid JSON structure for categories. Response: {$response}" );
-                return array();
-            }
-
-            WP_CLI::log( "Categories parsed successfully for post ID {$post->ID}." );
-
-            // Limit to the required number of categories
-            return array_slice( $parsed['categories'], 0, $number );
-        }
-
-        /**
-         * Generates tags using OpenAI with retry mechanism and JSON parsing.
-         *
-         * @param WP_Post $post     The post object.
-         * @param int     $number   Number of tags to generate.
-         * @param string  $api_key  The OpenAI API key.
-         *
-         * @return array Array of generated tags or empty array on failure.
-         */
-        private function generate_tags( $post, $number, $api_key ) {
-            // Fetch post content for better context
-            $post_content = $post->post_content;
-            $post_excerpt = $post->post_excerpt;
-
-            $prompt = "Based on the following blog post title and content, generate {$number} SEO-optimized tags. The tags should be specific, relevant, and descriptive keywords that reflect the main topics of the post. Do not include numbers. Provide the results in the following JSON format:\n\n{\n  \"tags\": [\"Tag1\", \"Tag2\", \"Tag3\", \"Tag4\", \"Tag5\"]\n}\n\nTitle: \"{$post->post_title}\"\n\nContent: \"{$post_content}\"\n\nExcerpt: \"{$post_excerpt}\"";
-
-            $response = $this->openai_api_handler->call_openai_api_with_retries( $prompt, $api_key );
-
-            if ( is_wp_error( $response ) ) {
-                WP_CLI::warning( "OpenAI API error while generating tags for post ID {$post->ID}: " . $response->get_error_message() );
-                return array();
-            }
-
-            // Strip Markdown code blocks if present
-            $response = $this->strip_markdown_code_blocks( $response );
-
-            // Parse JSON response
-            $parsed = json_decode( $response, true );
-
-            if ( json_last_error() !== JSON_ERROR_NONE ) {
-                WP_CLI::warning( "Failed to parse JSON response while generating tags for post ID {$post->ID}: " . json_last_error_msg() );
-                $this->log_to_file( "JSON parse error for post ID {$post->ID}: " . json_last_error_msg() . ". Response: {$response}" );
-                return array();
-            }
-
-            if ( ! isset( $parsed['tags'] ) || ! is_array( $parsed['tags'] ) ) {
-                WP_CLI::warning( "JSON response does not contain 'tags' array for post ID {$post->ID}." );
-                $this->log_to_file( "Invalid JSON structure for tags. Response: {$response}" );
-                return array();
-            }
-
-            WP_CLI::log( "Tags parsed successfully for post ID {$post->ID}." );
-
-            // Limit to the required number of tags
-            return array_slice( $parsed['tags'], 0, $number );
         }
 
         /**

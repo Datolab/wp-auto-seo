@@ -1,4 +1,6 @@
 <?php
+namespace Datolab\AutoSEO;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }

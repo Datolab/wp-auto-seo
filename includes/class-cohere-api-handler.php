@@ -1,4 +1,6 @@
 <?php
+namespace Datolab\AutoSEO;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
@@ -49,4 +51,3 @@ class Cohere_API_Handler extends AI_API_Handler {
         return new WP_Error( 'cohere_api_failed', 'Cohere API failed after multiple attempts.' );
     }
 }
-

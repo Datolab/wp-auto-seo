@@ -1,4 +1,6 @@
 <?php
+namespace Datolab\AutoSEO;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
@@ -49,4 +51,3 @@ class Anthropic_API_Handler extends AI_API_Handler {
         return new WP_Error( 'anthropic_api_failed', 'Anthropic API failed after multiple attempts.' );
     }
 }
-

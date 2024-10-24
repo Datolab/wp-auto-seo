@@ -2,7 +2,7 @@
 
 ## 1. Code Quality and Structure
 - ~~Use Namespaces: Implement PHP namespaces to avoid potential naming conflicts and improve code organization.~~
-- Follow PSR Standards: Ensure that the code adheres to PHP-FIG standards (like PSR-1, PSR-2, and PSR-12) for better readability and maintainability.
+- ~~Follow PSR Standards: Ensure that the code adheres to PHP-FIG standards (like PSR-1, PSR-2, and PSR-12) for better readability and maintainability.~~
 - Unit Testing: Introduce unit tests using PHPUnit to ensure that the plugin functions as expected and to facilitate future changes without breaking existing functionality.
 
 ## 2. User Experience

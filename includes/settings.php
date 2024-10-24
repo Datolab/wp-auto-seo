@@ -5,13 +5,27 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+/**
+ * Class Datolab_Auto_SEO_Settings
+ *
+ * Handles the settings for the Datolab Auto SEO plugin, including adding the settings page
+ * and registering the settings for API keys.
+ */
 class Datolab_Auto_SEO_Settings {
 
+    /**
+     * Datolab_Auto_SEO_Settings constructor.
+     *
+     * Initializes the settings page and registers the settings.
+     */
     public function __construct() {
         add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
     }
 
+    /**
+     * Adds the settings page to the WordPress admin menu.
+     */
     public function add_settings_page() {
         add_options_page(
             'Datolab Auto SEO Settings',    // Page title
@@ -22,6 +36,9 @@ class Datolab_Auto_SEO_Settings {
         );
     }
 
+    /**
+     * Creates the settings page content.
+     */
     public function create_settings_page() {
         ?>
         <div class="wrap">
@@ -42,6 +59,9 @@ class Datolab_Auto_SEO_Settings {
         <?php
     }
 
+    /**
+     * Registers the settings for the API keys.
+     */
     public function register_settings() {
         // Register the settings for OpenAI API key
         register_setting(
@@ -112,28 +132,45 @@ class Datolab_Auto_SEO_Settings {
         );
     }
 
+    /**
+     * Callback function for the main section of the settings page.
+     */
     public function main_section_callback() {
         echo '<p>' . esc_html__( 'Enter your API keys to enable automatic SEO tag and category generation.', 'datolab-auto-seo' ) . '</p>';
     }
 
+    /**
+     * Callback function for the OpenAI API key field.
+     */
     public function openai_api_key_callback() {
         $api_key = get_option( 'datolab_auto_seo_openai_api_key', '' );
         echo '<input type="password" id="openai_api_key" name="datolab_auto_seo_openai_api_key" value="' . esc_attr( $api_key ) . '" size="50" />';
         $this->add_toggle_reset_buttons('openai_api_key');
     }
 
+    /**
+     * Callback function for the Cohere API key field.
+     */
     public function cohere_api_key_callback() {
         $api_key = get_option( 'datolab_auto_seo_cohere_api_key', '' );
         echo '<input type="password" id="cohere_api_key" name="datolab_auto_seo_cohere_api_key" value="' . esc_attr( $api_key ) . '" size="50" />';
         $this->add_toggle_reset_buttons('cohere_api_key');
     }
 
+    /**
+     * Callback function for the Anthropic API key field.
+     */
     public function anthropic_api_key_callback() {
         $api_key = get_option( 'datolab_auto_seo_anthropic_api_key', '' );
         echo '<input type="password" id="anthropic_api_key" name="datolab_auto_seo_anthropic_api_key" value="' . esc_attr( $api_key ) . '" size="50" />';
         $this->add_toggle_reset_buttons('anthropic_api_key');
     }
 
+    /**
+     * Adds toggle and reset buttons for API key fields.
+     *
+     * @param string $field_id The ID of the field for which to add buttons.
+     */
     private function add_toggle_reset_buttons($field_id) {
         echo '<button type="button" id="toggle_' . $field_id . '" style="margin-left:10px;">' . esc_html__( 'Show', 'datolab-auto-seo' ) . '</button>';
         echo '<button type="button" id="reset_' . $field_id . '" style="margin-left:10px;">' . esc_html__( 'Reset API Key', 'datolab-auto-seo' ) . '</button>';

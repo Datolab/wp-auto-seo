@@ -5,6 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+/**
+ * Class OpenAI_API_Handler
+ *
+ * Handles API calls to the OpenAI service.
+ */
 class OpenAI_API_Handler extends AI_API_Handler {
     /**
      * Maximum number of retries for API calls.

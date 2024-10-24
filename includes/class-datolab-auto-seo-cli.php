@@ -10,6 +10,11 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
     require_once 'class-openai-api-handler.php'; // Include the OpenAI API handler
     // TODO: Add cohere and anthropic api handlers
 
+    /**
+     * Class Datolab_Auto_SEO_CLI_Command
+     *
+     * Handles WP-CLI commands for the Datolab Auto SEO plugin.
+     */
     class Datolab_Auto_SEO_CLI_Command extends WP_CLI_Command {
 
         /**
@@ -32,8 +37,16 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
          */
         const ADMIN_NOTIFICATION_SUBJECT = 'Datolab Auto SEO: OpenAI API Processing Errors';
 
+        /**
+         * @var OpenAI_API_Handler The OpenAI API handler instance.
+         */
         private $openai_api_handler;
 
+        /**
+         * Datolab_Auto_SEO_CLI_Command constructor.
+         *
+         * Initializes the OpenAI API handler with the API key.
+         */
         public function __construct() {
             $api_key = $this->get_openai_api_key(); // Retrieve the OpenAI API key securely
             if ( ! empty( $api_key ) ) {
@@ -51,6 +64,9 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
          *     wp datolab-auto-seo process
          *
          * @when after_wp_load
+         *
+         * @param array $args Positional arguments.
+         * @param array $assoc_args Associative arguments.
          */
         public function process( $args, $assoc_args ) {
             WP_CLI::log( 'Starting Datolab Auto SEO processing.' );
@@ -82,6 +98,11 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             WP_CLI::success( 'All draft posts have been processed.' );
         }
 
+        /**
+         * Processes categories for a given post.
+         *
+         * @param WP_Post $post The post object.
+         */
         private function process_categories( $post ) {
             $current_categories_count = count( wp_get_post_categories( $post->ID ) );
             $categories_needed = max( 0, self::MAX_CATEGORIES - $current_categories_count );
@@ -98,6 +119,11 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             }
         }
 
+        /**
+         * Processes tags for a given post.
+         *
+         * @param WP_Post $post The post object.
+         */
         private function process_tags( $post ) {
             $current_tags_count = count( wp_get_post_tags( $post->ID ) );
             $tags_needed = max( 0, self::MAX_TAGS - $current_tags_count );
@@ -114,6 +140,13 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             }
         }
 
+        /**
+         * Generates categories for a given post.
+         *
+         * @param WP_Post $post The post object.
+         * @param int $number The number of categories to generate.
+         * @return array The generated categories.
+         */
         private function generate_categories( $post, $number ) {
             // Fetch post content for better context
             $post_content = $post->post_content;
@@ -150,6 +183,13 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             return array_slice( $parsed['categories'], 0, $number );
         }
 
+        /**
+         * Generates tags for a given post.
+         *
+         * @param WP_Post $post The post object.
+         * @param int $number The number of tags to generate.
+         * @return array The generated tags.
+         */
         private function generate_tags( $post, $number ) {
             // Fetch post content for better context
             $post_content = $post->post_content;
@@ -186,6 +226,12 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             return array_slice( $parsed['tags'], 0, $number );
         }
 
+        /**
+         * Associates a category with a post.
+         *
+         * @param int $post_id The ID of the post.
+         * @param string $category_name The name of the category to associate.
+         */
         private function associate_category( $post_id, $category_name ) {
             // Check if category exists
             $term = term_exists( $category_name, 'category' );
@@ -206,6 +252,12 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             wp_set_post_categories( $post_id, array_merge( wp_get_post_categories( $post_id ), array( $term_id ) ) );
         }
 
+        /**
+         * Associates a tag with a post.
+         *
+         * @param int $post_id The ID of the post.
+         * @param string $tag_name The name of the tag to associate.
+         */
         private function associate_tag( $post_id, $tag_name ) {
             if ( $this->is_valid_tag( $tag_name ) ) {
                 $term = term_exists( $tag_name, 'post_tag' );

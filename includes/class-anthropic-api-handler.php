@@ -5,9 +5,20 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+/**
+ * Class Anthropic_API_Handler
+ *
+ * Handles API calls to the Anthropic service.
+ */
 class Anthropic_API_Handler extends AI_API_Handler {
     const MAX_RETRIES = 3;
 
+    /**
+     * Calls the Anthropic API with a given prompt.
+     *
+     * @param string $prompt The prompt to send to the Anthropic service.
+     * @return string|WP_Error The API response text or WP_Error on failure.
+     */
     public function call_api( $prompt ) {
         $api_url = 'https://api.anthropic.com/v1/complete';
         $attempt = 0;

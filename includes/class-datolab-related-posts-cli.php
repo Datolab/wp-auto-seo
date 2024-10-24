@@ -5,6 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
+    /**
+     * Class Datolab_Related_Posts_CLI_Command
+     *
+     * Handles WP-CLI commands for associating related posts based on shared categories and tags.
+     */
     class Datolab_Related_Posts_CLI_Command extends WP_CLI_Command {
 
         /**
@@ -15,6 +20,9 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
          *     wp datolab-related-posts associate
          *
          * @when after_wp_load
+         *
+         * @param array $args Positional arguments.
+         * @param array $assoc_args Associative arguments.
          */
         public function associate( $args, $assoc_args ) {
             WP_CLI::log( 'Starting to associate related posts based on shared categories and tags.' );

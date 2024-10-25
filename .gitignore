@@ -16,6 +16,7 @@ yarn-error.log
 *.bak
 *.swp
 *.swo
+*~
 
 # Ignore IDE and editor specific files
 /.idea/
@@ -40,4 +41,14 @@ Desktop.ini
 
 # htaccess
 /.htaccess
+
+# Ignore PHPUnit result cache
+.phpunit.result.cache
+
+# Ignore Composer's vendor directory and lock file
+/vendor/
+/composer.lock
+
+# Ignore PHPUnit configuration file (optional, if it's specific to your environment)
+phpunit.xml
 

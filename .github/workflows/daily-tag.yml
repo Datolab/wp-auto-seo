@@ -1,0 +1,39 @@
+name: Daily Tag Creation
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Runs daily at midnight UTC
+
+jobs:
+  create-tag:
+    name: Create Daily Tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Date Variables
+        id: date_vars
+        run: |
+          # Get current date in YY.MM.DD format
+          DATE_TAG=$(date +"%y.%m.%d")
+          echo "tag=$DATE_TAG" >> $GITHUB_ENV
+
+      - name: Check if Tag Exists
+        run: |
+          if git rev-parse "refs/tags/$tag" >/dev/null 2>&1; then
+            echo "Tag $tag already exists. Skipping tag creation."
+            exit 0
+          fi
+        env:
+          tag: ${{ env.tag }}
+
+      - name: Create and Push Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create a new tag with the current date
+          git tag -a "$tag" -m "Daily automated tag for $tag"
+          # Push the tag to trigger the release workflow
+          git push origin "$tag"

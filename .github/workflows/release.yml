@@ -14,6 +14,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Debug Working Directory
+        run: |
+          echo "Current Directory: $(pwd)"
+          ls -al  # List all files to verify paths
+
       - name: Set Up PHP
         uses: shivammathur/setup-php@v2
         with:

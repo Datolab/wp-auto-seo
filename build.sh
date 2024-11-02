@@ -5,7 +5,8 @@ set -e
 PLUGIN_SLUG="datolab-auto-seo"
 PLUGIN_FILE="$PLUGIN_SLUG.php"
 
-# Check if the plugin file exists
+# Debugging: Confirm the plugin file path
+echo "Plugin file path: $PLUGIN_FILE"
 if [ ! -f "$PLUGIN_FILE" ]; then
     echo "Error: Plugin file $PLUGIN_FILE not found!"
     exit 1
@@ -17,12 +18,22 @@ RELEASE_TAG=$(date +"%y.%m.%d") # YY.MM.DD for GitHub release tag
 
 echo "Building $PLUGIN_SLUG version $VERSION..."
 
+
+# Define the sed command with compatibility for macOS and Linux
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS/BSD sed syntax
+    SED_CMD=("sed" "-i" "")
+else
+    # GNU sed (Linux) syntax
+    SED_CMD=("sed" "-i")
+fi
+
 # Update the version in the main plugin file
-sed -i '' -e "s/^\( \*\?Version:\s*\).*/\1$VERSION/" "$PLUGIN_FILE"
+"${SED_CMD[@]}" -e "s/^\( \*\?Version:\s*\).*/\1$VERSION/" "$PLUGIN_FILE"
 
 # Update the version in readme.txt
 if [ -f "readme.txt" ]; then
-    sed -i '' -e "s/^\(Stable tag:\s*\).*/\1$VERSION/" readme.txt
+    "${SED_CMD[@]}" -e "s/^\(Stable tag:\s*\).*/\1$VERSION/" readme.txt
 fi
 
 # Define build directories

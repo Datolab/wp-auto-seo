@@ -1,38 +1,28 @@
 #!/bin/bash
-
-# Exit immediately if a command exits with a non-zero status.
 set -e
 
 # Define variables
 PLUGIN_SLUG="datolab-auto-seo"
 PLUGIN_FILE="$PLUGIN_SLUG.php"
 
-# Get the current date in YYYYMMDD format
-CURRENT_DATE=$(date +"%Y%m%d")
+# Get the current date in both formats
+VERSION=$(date +"%Y%m%d")       # YYYYMMDD for plugin file and readme.txt
+RELEASE_TAG=$(date +"%y.%m.%d") # YY.MM.DD for GitHub release tag
 
-# Get the number of commits made today
-COUNTER=$(git log --since=midnight --oneline | wc -l)
-COUNTER=$(printf "%02d" $((COUNTER - 1))) # Subtract 1 for the current commit
-
-# Construct the new version string
-NEW_VERSION="${CURRENT_DATE}${COUNTER}"
-
-echo "Updating version to $NEW_VERSION"
+echo "Building $PLUGIN_SLUG version $VERSION..."
 
 # Update the version in the main plugin file
-sed -i "s/^\( \*\?Version:\s*\).*/\1$NEW_VERSION/" "$PLUGIN_FILE"
+sed -i '' "s/^\( \*\?Version:\s*\).*/\1$VERSION/" "$PLUGIN_FILE"
 
-# Update the version in readme.txt (if applicable)
+# Update the version in readme.txt
 if [ -f "readme.txt" ]; then
-    sed -i "s/^\(Stable tag:\s*\).*/\1$NEW_VERSION/" readme.txt
+    sed -i '' "s/^\(Stable tag:\s*\).*/\1$VERSION/" readme.txt
 fi
 
-# Rest of your build script...
-
-# Define build directories and variables as before
+# Define build directories
 BUILD_DIR="./build"
 RELEASE_DIR="$BUILD_DIR/$PLUGIN_SLUG"
-ZIP_FILE="$PLUGIN_SLUG-v$NEW_VERSION.zip"
+ZIP_FILE="$PLUGIN_SLUG-$RELEASE_TAG.zip"
 
 # Clean up any previous build
 rm -rf "$BUILD_DIR"
@@ -60,7 +50,7 @@ rsync -av --exclude='build.sh' \
 # Navigate to the build directory
 cd "$BUILD_DIR"
 
-# Create the zip file
+# Create the zip file with the release tag
 zip -r "../$ZIP_FILE" "$PLUGIN_SLUG"
 
 # Navigate back to the root directory
@@ -70,3 +60,4 @@ cd ..
 rm -rf "$BUILD_DIR"
 
 echo "Build complete: $ZIP_FILE"
+echo "Release tag version: $RELEASE_TAG"

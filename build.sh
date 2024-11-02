@@ -5,12 +5,34 @@ set -e
 
 # Define variables
 PLUGIN_SLUG="datolab-auto-seo"
+PLUGIN_FILE="$PLUGIN_SLUG.php"
+
+# Get the current date in YYYYMMDD format
+CURRENT_DATE=$(date +"%Y%m%d")
+
+# Get the number of commits made today
+COUNTER=$(git log --since=midnight --oneline | wc -l)
+COUNTER=$(printf "%02d" $((COUNTER - 1))) # Subtract 1 for the current commit
+
+# Construct the new version string
+NEW_VERSION="${CURRENT_DATE}${COUNTER}"
+
+echo "Updating version to $NEW_VERSION"
+
+# Update the version in the main plugin file
+sed -i "s/^\( \*\?Version:\s*\).*/\1$NEW_VERSION/" "$PLUGIN_FILE"
+
+# Update the version in readme.txt (if applicable)
+if [ -f "readme.txt" ]; then
+    sed -i "s/^\(Stable tag:\s*\).*/\1$NEW_VERSION/" readme.txt
+fi
+
+# Rest of your build script...
+
+# Define build directories and variables as before
 BUILD_DIR="./build"
 RELEASE_DIR="$BUILD_DIR/$PLUGIN_SLUG"
-VERSION=$(grep "Version:" "$PLUGIN_SLUG.php" | awk '{print $2}')
-ZIP_FILE="$PLUGIN_SLUG-v$VERSION.zip"
-
-echo "Building $PLUGIN_SLUG version $VERSION..."
+ZIP_FILE="$PLUGIN_SLUG-v$NEW_VERSION.zip"
 
 # Clean up any previous build
 rm -rf "$BUILD_DIR"

@@ -266,6 +266,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             if ( $this->is_valid_tag( $tag_name ) ) {
                 $term = term_exists( $tag_name, 'post_tag' );
                 if ( ! $term ) {
+                    // If the tag doesn't exist, create it and get the new term ID
                     $new_term = wp_insert_term( $tag_name, 'post_tag' );
                     if ( is_wp_error( $new_term ) ) {
                         WP_CLI::warning( "Failed to create tag: {$tag_name}" );
@@ -274,12 +275,17 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
                     $term_id = $new_term['term_id'];
                     WP_CLI::log( "Created new tag: {$tag_name}" );
                 } else {
+                    // If the tag exists, get its term ID
                     $term_id = $term['term_id'];
                     WP_CLI::log( "Tag exists: {$tag_name}" );
                 }
 
-                // Associate tag with post
-                wp_set_post_tags( $post_id, array_merge( wp_get_post_tags( $post_id, array( 'fields' => 'ids' ) ), array( $term_id ) ) );
+                // Get current tags by name and add the new tag name
+                $current_tags = wp_get_post_tags( $post_id, array( 'fields' => 'names' ) );
+                $updated_tags = array_merge( $current_tags, array( $tag_name ) );
+
+                // Set the updated tags by name for the post
+                wp_set_post_tags( $post_id, $updated_tags );
             } else {
                 WP_CLI::warning( "Invalid tag generated (numeric or irrelevant): {$tag_name}" );
                 $this->log_to_file( "Invalid tag generated for post ID {$post_id}: {$tag_name}" );

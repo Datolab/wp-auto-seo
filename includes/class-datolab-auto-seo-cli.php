@@ -1,9 +1,13 @@
 <?php
 namespace Datolab\AutoSEO;
 
+use WP_CLI;
+use WP_CLI_Command;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
+
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
     require_once 'class-ai-api-handler.php'; // Include the base AI API handler
@@ -385,10 +389,15 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
          * @return string The OpenAI API key or an empty string if not set.
          */
         private function get_openai_api_key() {
-            // Ensure the current user has the required capability
-            if ( ! current_user_can( 'manage_options' ) ) {
-                WP_CLI::warning( 'Current user lacks manage_options capability.' );
-                return '';
+            // Bypass capability check if running in WP-CLI mode
+            if (defined('WP_CLI') && WP_CLI) {
+                WP_CLI::log('Running in WP-CLI mode, bypassing capability check.');
+            } else {
+                // Ensure the current user has the required capability
+                if (!current_user_can('manage_options')) {
+                    WP_CLI::warning('Current user lacks manage_options capability.');
+                    return '';
+                }
             }
 
             // Retrieve the API key securely
@@ -457,5 +466,5 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
         }
     }
 
-    WP_CLI::add_command( 'datolab-auto-seo', 'Datolab_Auto_SEO_CLI_Command' );
+    WP_CLI::add_command( 'datolab-auto-seo', __NAMESPACE__ . '\\Datolab_Auto_SEO_CLI_Command' );
 }

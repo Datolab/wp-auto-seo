@@ -1,6 +1,8 @@
 <?php
 namespace Datolab\AutoSEO;
 
+use WP_CLI;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }

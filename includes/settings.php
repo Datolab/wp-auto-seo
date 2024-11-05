@@ -65,8 +65,8 @@ class Datolab_Auto_SEO_Settings {
     public function register_settings() {
         // Register the settings for OpenAI API key
         register_setting(
-            'datolab_auto_seo_settings_group',           // Option group
-            'datolab_auto_seo_openai_api_key',          // Option name (unique)
+            'datolab_auto_seo_settings_group',
+            'datolab_auto_seo_openai_api_key',
             array(
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
@@ -76,8 +76,8 @@ class Datolab_Auto_SEO_Settings {
 
         // Register the settings for Cohere API key
         register_setting(
-            'datolab_auto_seo_settings_group',           // Option group
-            'datolab_auto_seo_cohere_api_key',          // Option name (unique)
+            'datolab_auto_seo_settings_group',
+            'datolab_auto_seo_cohere_api_key',
             array(
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
@@ -87,8 +87,8 @@ class Datolab_Auto_SEO_Settings {
 
         // Register the settings for Anthropic API key
         register_setting(
-            'datolab_auto_seo_settings_group',           // Option group
-            'datolab_auto_seo_anthropic_api_key',       // Option name (unique)
+            'datolab_auto_seo_settings_group',
+            'datolab_auto_seo_anthropic_api_key',
             array(
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',

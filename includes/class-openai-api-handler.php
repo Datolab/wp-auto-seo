@@ -77,7 +77,7 @@ class OpenAI_API_Handler extends AI_API_Handler {
             }
 
             // Exponential backoff before retrying
-            $delay = pow( 4, $attempt ); // 4^1 = 4, 4^2 = 16, 4^3 = 64 seconds
+            $delay = pow( 5, $attempt ); // 4^1 = 4, 4^2 = 16, 4^3 = 64 seconds
             WP_CLI::log( "Waiting for {$delay} seconds before next attempt." );
             sleep( $delay );
         }

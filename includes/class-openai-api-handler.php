@@ -35,7 +35,7 @@ class OpenAI_API_Handler extends AI_API_Handler {
 
             $args = array(
                 'body'        => json_encode( array(
-                    'model'       => 'gpt-4o', // Use a supported chat model
+                    'model'       => 'gpt-4o-mini', // Use a supported chat model
                     'messages'    => array(
                         array(
                             'role'    => 'user',

@@ -88,15 +88,23 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             }
 
             foreach ( $draft_posts as $post ) {
-                WP_CLI::log( "Processing post ID {$post->ID}: {$post->post_title}" );
+                // Check if the post has the "Uncategorized" category and empty tags
+                $current_categories = wp_get_post_categories( $post->ID );
+                $current_tags = wp_get_post_tags( $post->ID );
 
-                $this->process_categories( $post );
-                $this->process_tags( $post );
+                if ( in_array( get_cat_ID( 'Uncategorized' ), $current_categories ) && empty( $current_tags ) ) {
+                    WP_CLI::log( "Processing post ID {$post->ID}: {$post->post_title}" );
 
-                // Remove "Uncategorized" from post categories
-                $this->remove_uncategorized( $post->ID );
+                    $this->process_categories( $post );
+                    $this->process_tags( $post );
 
-                WP_CLI::success( "Processed post ID {$post->ID}" );
+                    // Remove "Uncategorized" from post categories
+                    $this->remove_uncategorized( $post->ID );
+
+                    WP_CLI::success( "Processed post ID {$post->ID}" );
+                } else {
+                    WP_CLI::log( "Skipping post ID {$post->ID} - does not meet criteria." );
+                }
             }
 
             WP_CLI::success( 'All draft posts have been processed.' );

@@ -1,0 +1,115 @@
+.datolab-auto-seo-logs-controls {
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+}
+
+.datolab-auto-seo-logs-controls .filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.datolab-auto-seo-logs-controls .actions {
+    display: flex;
+    gap: 10px;
+}
+
+.datolab-auto-seo-logs-controls select,
+.datolab-auto-seo-logs-controls input {
+    min-width: 150px;
+}
+
+.datolab-auto-seo-logs-container {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.logs-content {
+    min-height: 400px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.log-entry {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f1;
+    font-family: monospace;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-entry .timestamp {
+    color: #666;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.log-entry .level {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.log-entry .level.error {
+    background: #ffebe8;
+    color: #d63638;
+}
+
+.log-entry .level.warning {
+    background: #fff8e5;
+    color: #996800;
+}
+
+.log-entry .level.info {
+    background: #e5f5fa;
+    color: #007cba;
+}
+
+.log-entry .message {
+    flex-grow: 1;
+    word-break: break-word;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    padding: 15px;
+    border-top: 1px solid #f0f0f1;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    background: #f0f0f1;
+    border: 1px solid #ccd0d4;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background: #007cba;
+    color: #fff;
+    border-color: #006ba1;
+}

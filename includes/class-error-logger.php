@@ -181,4 +181,27 @@ class Error_Logger {
 
         return implode('', $logs);
     }
+
+    /**
+     * Clear all logs
+     *
+     * @return bool True if logs were cleared successfully
+     */
+    public function clear_logs() {
+        if (!file_exists($this->log_file)) {
+            return true;
+        }
+
+        $result = file_put_contents($this->log_file, '');
+        if ($result !== false) {
+            $this->log(
+                "Logs cleared by admin",
+                'info',
+                array('user_id' => get_current_user_id())
+            );
+            return true;
+        }
+
+        return false;
+    }
 }

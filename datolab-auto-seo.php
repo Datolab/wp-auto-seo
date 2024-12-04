@@ -37,8 +37,12 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'datolab_auto_
 
 // Include necessary files.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-error-logger.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-logs-admin.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-datolab-auto-seo-cli.php';
 
 // Initialize the error logger
 $GLOBALS['datolab_auto_seo_logger'] = new Datolab\AutoSEO\Error_Logger();
+
+// Initialize the logs admin interface
+new Datolab\AutoSEO\Logs_Admin();

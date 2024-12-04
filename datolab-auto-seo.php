@@ -36,5 +36,9 @@ function datolab_auto_seo_add_settings_link( $links ) {
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'datolab_auto_seo_add_settings_link' );
 
 // Include necessary files.
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-error-logger.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-datolab-auto-seo-cli.php';
+
+// Initialize the error logger
+$GLOBALS['datolab_auto_seo_logger'] = new Datolab\AutoSEO\Error_Logger();

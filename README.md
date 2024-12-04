@@ -7,7 +7,37 @@ The **Datolab Auto SEO** plugin enhances your WordPress site's SEO by automatica
 - Automatically generates SEO tags and categories for draft posts.
 - Associates related posts based on shared categories and tags.
 - Custom WP CLI commands for easy management and automation of SEO tasks.
+- Comprehensive error logging and monitoring system.
 - **Requires an OpenAI API Key** to function properly.
+
+## Error Logging and Monitoring
+
+The plugin includes a robust error logging and monitoring system that helps track and debug issues:
+
+### Log Features
+- Automatic log rotation (5MB file size limit)
+- Keeps last 5 backup log files
+- JSON-formatted context data
+- Timestamps for all entries
+- User tracking
+- Email notifications for critical errors
+
+### Log Location
+Logs are stored in `wp-content/plugins/datolab-auto-seo/includes/logs/datolab-auto-seo.log`
+
+### What's Being Logged
+- API calls and responses
+- Error messages and status codes
+- Request and response metrics
+- User actions
+- System warnings and information
+- Performance metrics
+
+### Email Notifications
+The system automatically sends email notifications to the WordPress admin for critical errors, including:
+- API failures
+- Authentication issues
+- System-critical errors
 
 ## WP CLI Commands
 

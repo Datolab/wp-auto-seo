@@ -41,13 +41,30 @@ class OpenAI_API_Handler extends AI_API_Handler {
      * @return string|WP_Error The API response text or WP_Error on failure.
      */
     public function call_api( $prompt ) {
+        // Check rate limit before making the request
+        $rate_check = $this->check_rate_limit();
+        if (is_wp_error($rate_check)) {
+            $this->logger->log(
+                $rate_check->get_error_message(),
+                'warning',
+                array(
+                    'api' => 'OpenAI',
+                    'prompt_length' => strlen($prompt)
+                )
+            );
+            return $rate_check;
+        }
+
         $api_url = 'https://api.openai.com/v1/chat/completions'; // Chat completions endpoint
         $attempt = 0;
 
         $this->logger->log(
             "Starting OpenAI API call",
             'info',
-            array('prompt_length' => strlen($prompt))
+            array(
+                'prompt_length' => strlen($prompt),
+                'api_url' => $api_url
+            )
         );
 
         while ( $attempt < self::MAX_RETRIES ) {
